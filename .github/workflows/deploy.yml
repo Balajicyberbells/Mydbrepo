@@ -1,0 +1,27 @@
+name: Deploy SQL to PostgreSQL
+
+on:
+  push:
+    paths:
+      - schema.sql
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install PostgreSQL client
+        run: sudo apt-get install postgresql-client -y
+
+      - name: Deploy SQL to PostgreSQL
+        env:
+          PGPASSWORD: ${{ secrets.DB_PASSWORD }}
+        run: |
+          psql -h ${{ secrets.DB_HOST }} \
+               -U ${{ secrets.DB_USER }} \
+               -d ${{ secrets.DB_NAME }} \
+               -p ${{ secrets.DB_PORT }} \
+               -f schema.sql
